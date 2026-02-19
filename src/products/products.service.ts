@@ -55,7 +55,8 @@ export class ProductsService {
     });
   }
 
-  remove(id: number) {
+  //para borrar
+  async remove(id: number) {
     return this.prisma.product.delete({
       where: { id },
     });

@@ -22,12 +22,15 @@ export class ProductsService {
 
   async findAll(paginationDto: PaginationDto) {
     const { limit = 10, page = 1 } = paginationDto;
-    const totalPages = await this.prisma.product.count();
+    const totalPages = await this.prisma.product.count({
+      where: { available: true },
+    });
     const lastPage = Math.ceil(totalPages / limit);
     return {
       data: await this.prisma.product.findMany({
         skip: (page - 1) * limit,
         take: limit,
+        where: { available: true },
       }),
       meta: {
         total: totalPages,
@@ -57,8 +60,16 @@ export class ProductsService {
 
   //para borrar
   async remove(id: number) {
-    return this.prisma.product.delete({
+    // return this.prisma.product.delete({
+    //   where: { id },
+    // });
+    await this.findOne(id);
+    const product = await this.prisma.product.update({
       where: { id },
+      data: {
+        available: false,
+      },
     });
+    return product;
   }
 }
